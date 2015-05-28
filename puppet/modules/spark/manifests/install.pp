@@ -1,18 +1,18 @@
-# Install HBase by downloading it, extracting it and linking it
-class hbase::install($user, $version, $shareFolder) {
+# Install Spark by downloading it, extracting it and linking it
+class spark::install($user, $version, $shareFolder) {
 
   $protocol = 'http'
   $domain = 'archive.apache.org'
-  $path = "/dist/hbase/hbase-${version}/"
-  $file = "hbase-${version}"
-  $archive = "${file}-bin.tar.gz"
+  $path = "/dist/spark/spark-${version}/"
+  $file = "spark-${version}-bin-hadoop2.6"
+  $archive = "${file}.tgz"
 
   Exec {
     path  => '/bin:/usr/bin:/sbin',
     user  => $user
   }
 
-  exec { "download hbase-${version}":
+  exec { "download spark-${version}":
     command   => "wget ${protocol}://${domain}${path}${archive}",
     cwd       => $shareFolder,
     user      => 'root',
@@ -20,17 +20,17 @@ class hbase::install($user, $version, $shareFolder) {
     onlyif    => "test ! -f ${$shareFolder}/${archive}"
   }
 
-  exec { "extract hbase-${version}":
+  exec { "extract spark-${version}":
     command => "tar -xvf ${archive} -C /home/${user}",
     cwd     => $shareFolder,
-    require => Exec["download hbase-${version}"]
+    require => Exec["download spark-${version}"]
   }
 
-  file { "/home/${user}/hbase":
+  file { "/home/${user}/spark":
     ensure  => 'link',
     target  => "/home/${user}/${file}",
     owner   => $user,
-    require => Exec["extract hbase-${version}"]
+    require => Exec["extract spark-${version}"]
   }
 
 }
